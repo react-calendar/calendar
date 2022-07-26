@@ -5,8 +5,8 @@ import { initMarkers, resortWeeks, initDay } from 'src/utils/handler';
 import Checkbox from 'src/components/checkbox';
 import CalendayPanel from 'src/components/calendar/calendarPanel';
 
-import './styles/index.scss';
-import './styles/layout.scss';
+import 'src/styles/index.scss';
+import 'src/styles/layout.scss';
 
 interface CalendarProps {
   fold: boolean; // 是否展开

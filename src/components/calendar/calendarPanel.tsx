@@ -5,8 +5,8 @@ import { initMonths } from 'src/utils/handler';
 import CalendarDay from './calendarDay';
 
 import 'swiper/css';
-import './styles/layout.scss';
-import './styles/index.scss';
+import 'src/styles/layout.scss';
+import 'src/styles/transition.scss';
 
 interface PanelProps {
   fold: boolean;

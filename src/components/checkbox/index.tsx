@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import './index.scss';
+import 'src/styles/checkbox.scss';
 
 interface CheckboxProps {
   onChange?: (value: boolean) => void;

@@ -1,5 +1,5 @@
-import './styles/layout.scss';
-import './styles/day.scss';
+import 'src/styles/layout.scss';
+import 'src/styles/day.scss';
 
 interface DayProps {
   showLunar: boolean;

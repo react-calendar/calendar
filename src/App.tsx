@@ -1,8 +1,8 @@
 import Calendar from 'src/components/calendar/calendar';
 
-import './App.scss';
+import './styles/app.scss';
 
-function App() {
+export default function App() {
   return (
     <div className="App">
       <div className="calendar">
@@ -11,5 +11,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
