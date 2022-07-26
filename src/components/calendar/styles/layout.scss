@@ -1,0 +1,27 @@
+.grid {
+  display: grid;
+  justify-items: center;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.row {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}

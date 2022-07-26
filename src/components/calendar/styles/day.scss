@@ -1,0 +1,66 @@
+@import './color.scss';
+
+.day__container {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 4px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $grey-2;
+  }
+
+  &.prev,
+  &.next {
+    // 非本月字体颜色
+    color: $grey-5;
+
+    // 非本月二十四节气样式
+    .term {
+      color: $blue-2;
+    }
+
+    // 非本月今日样式
+    &.today {
+      color: $blue-3;
+    }
+  }
+
+  // 农历中文名
+  .dayCn {
+    font-size: 12px;
+  }
+
+  &.cur {
+    // 本月今日样式
+    &.today {
+      color: $blue-5;
+    }
+
+    // 非本日, 非选择, 非二十四节气的农历颜色
+    &:not(.today):not(.select) > .dayCn:not(.term) {
+      color: $grey-7;
+    }
+
+    // 二十四节气的颜色
+    &:not(.select) > .term {
+      color: $blue-5;
+    }
+  }
+
+  &.select {
+    color: $white !important;
+    background: linear-gradient(-60deg, $blue-5, $blue-7);
+    animation: bg 0.5s 0s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+}
+
+@keyframes bg {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}

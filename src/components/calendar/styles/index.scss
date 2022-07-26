@@ -1,0 +1,28 @@
+.calendar__container {
+  min-width: 300px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  padding: 4px;
+  flex: none;
+
+  .calendar__weeks {
+    margin: 10px 0;
+  }
+
+  .calendar__content {
+    padding: 4px;
+
+    .calendar-content__datetime {
+      font-size: 2em;
+      font-weight: bold;
+    }
+
+    .calendar-content__year_desc {
+      font-size: 0.8em;
+    }
+  }
+}
+
+.transition {
+  transition: all 0.5s ease;
+}
