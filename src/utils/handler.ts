@@ -8,21 +8,6 @@ export function resortWeeks(start: number) {
   return [...Weeks.slice(start), ...Weeks.slice(0, start)];
 }
 
-// 获取一周起始的日期
-export function weekFirstDay(date: DateType, weekStart = 0): DateType {
-  const { year, month, day } = date;
-
-  const _date = dayjs([year, month - 1, day]);
-
-  const week = _date.day(); // 一周中的第几天
-
-  return {
-    year: _date.year(),
-    month: _date.month() + 1,
-    day: _date.date() - (Math.abs(week + 7 - weekStart) % 7),
-  };
-}
-
 // 初始化 makers
 export function initMarkers(makers: Maker[]) {
   const markers: MarkerCache = {};
@@ -141,9 +126,12 @@ export function initMonth(
   y: number,
   m: number,
   d: number,
-  startWeek = 0
+  startWeek = 0,
+  needFix = true // 是否需要将日期限制在本月
 ): MonthType {
-  const date = dayjs([y, m, 1]); // 月初
+  const d_ = dayjs([y, m, d]);
+
+  const date = dayjs([needFix ? y : d_.year(), needFix ? m : d_.month(), 1]); // 月初
 
   // 以 m 月为中心获取完整日历
   const { days, count } = suppleMonth(date.year(), date.month(), startWeek);
@@ -157,7 +145,7 @@ export function initMonth(
   const _date = {
     year,
     month,
-    day: xday,
+    day: needFix ? xday : d_.date(),
   };
 
   const weekdays = getMonthWeekDays(year, month, days);
@@ -170,7 +158,6 @@ export function initMonth(
     idays: days,
     days: weekdays,
     trans: getDayWeekIdxInMonth(_date, days) * 44, // 70px 为一个日期项的高度
-    wf: weekFirstDay(_date, startWeek), // 该周起始日期
   };
 }
 
@@ -198,19 +185,3 @@ export function initMonths(
     return initMonth(year, _month, day, startWeek);
   });
 }
-
-// // 判断左滑还是右划, mod => swiper 数减一(swiper 从 0 开始)
-// export function swiperDirection(prev: number, cur: number, mod = 2) {
-//   if (prev < cur) {
-//     // 之前的小于现在的
-//     if (prev === 0 && cur === mod) return -1; // 左滑
-
-//     return 1; // 右滑
-//   } else if (prev > cur) {
-//     if (cur === 0 && prev === mod) return 1; // 右滑
-
-//     return -1;
-//   }
-
-//   return 0;
-// }
