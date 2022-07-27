@@ -13,17 +13,25 @@
 
   &.prev,
   &.next {
-    // 非本月字体颜色
-    color: $grey-5;
+    transition: color 0.6s ease;
+  }
 
-    // 非本月二十四节气样式
-    .term {
-      color: $blue-2;
-    }
+  // 非折叠时样式
+  &:not(.fold) {
+    &.prev,
+    &.next {
+      // 非本月字体颜色
+      color: $grey-5;
 
-    // 非本月今日样式
-    &.today {
-      color: $blue-3;
+      // 非本月二十四节气样式
+      .term {
+        color: $blue-2;
+      }
+
+      // 非本月今日样式
+      &.today {
+        color: $blue-3;
+      }
     }
   }
 
