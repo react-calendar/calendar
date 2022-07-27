@@ -28,7 +28,6 @@ interface MonthType {
   idays: DateFullType[];
   days: WeekType[];
   trans: number; // 平移距离
-  wf: DateType;
 }
 
 interface Maker {
