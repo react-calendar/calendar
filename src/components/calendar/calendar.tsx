@@ -48,6 +48,16 @@ function Calendar(props: CalendarProps) {
 
   function onDateChange(e: DateFullType) {
     setSelectDate(e); // 修改已选择的日期
+
+    if (fold) {
+      // 当前处于折叠状态
+    } else {
+      // 当前处于月视图
+      if (e.state === 'prev' || e.state === 'next') {
+        // 当前点击的是上个月或者下个月
+      } else {
+      }
+    }
   }
 
   function onCurIndexChange(e: number) {
@@ -82,6 +92,7 @@ function Calendar(props: CalendarProps) {
       {/* 日期面板 */}
       <div className="calendar__panel">
         <CalendayPanel
+          showLunar={true}
           curTab={curTab}
           date={selectDate}
           onCurIndexChange={onCurIndexChange}
