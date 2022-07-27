@@ -12,6 +12,7 @@ interface PanelProps {
   date: DateFullType;
   startWeek: number;
   curTab: number;
+  markers: MarkerCache;
   showLunar: boolean;
   onDateChange: (value: DateFullType) => void;
   onCurIndexChange: (value: number) => void;
@@ -24,12 +25,13 @@ function CalendarPanel(props: PanelProps) {
     curTab,
     startWeek,
     showLunar,
+    markers,
     onDateChange: odc,
     onCurIndexChange: ocic,
   } = props;
 
   const [months, setMonths] = useState<MonthType[]>(
-    initMonths(date, curTab, startWeek)
+    initMonths(date, curTab, markers, startWeek)
   );
 
   // 刷新周视图, curTab 部分不需要变
@@ -39,11 +41,11 @@ function CalendarPanel(props: PanelProps) {
 
     // 上周索引
     const pi = (curTab + 2) % 3;
-    ms[pi] = initMonth(year, month, day - 7, startWeek, false);
+    ms[pi] = initMonth(year, month, day - 7, markers, startWeek, false);
 
     // 下周索引
     const ni = (curTab + 1) % 3;
-    ms[ni] = initMonth(year, month, day + 7, startWeek, false);
+    ms[ni] = initMonth(year, month, day + 7, markers, startWeek, false);
 
     setMonths(ms);
   }
@@ -55,11 +57,11 @@ function CalendarPanel(props: PanelProps) {
 
     // 上月索引
     const pi = (curTab + 2) % 3;
-    ms[pi] = initMonth(year, month - 1, day, startWeek);
+    ms[pi] = initMonth(year, month - 1, day, markers, startWeek);
 
     // 下月索引
     const ni = (curTab + 1) % 3;
-    ms[ni] = initMonth(year, month + 1, day, startWeek);
+    ms[ni] = initMonth(year, month + 1, day, markers, startWeek);
 
     setMonths(ms);
   }
@@ -87,12 +89,26 @@ function CalendarPanel(props: PanelProps) {
             { year: e.year, month: e.month, day: e.day },
             ms[curTab].idays
           ) * 44;
-        ms[ci] = initMonth(e.year, e.month, e.day - 7, startWeek, false); // 计算上周的
+        ms[ci] = initMonth(
+          e.year,
+          e.month,
+          e.day - 7,
+          markers,
+          startWeek,
+          false
+        ); // 计算上周的
       } else {
-        ms[i] = initMonth(e.year, e.month, e.day - 7, startWeek, false); // 计算上上周的
+        ms[i] = initMonth(
+          e.year,
+          e.month,
+          e.day - 7,
+          markers,
+          startWeek,
+          false
+        ); // 计算上上周的
       }
     } else {
-      ms[i] = initMonth(e.year, e.month - 1, e.day, startWeek);
+      ms[i] = initMonth(e.year, e.month - 1, e.day, markers, startWeek);
       ms[ci].trans =
         getDayWeekIdxInMonth(
           { year: e.year, month: e.month, day: e.day },
@@ -122,12 +138,26 @@ function CalendarPanel(props: PanelProps) {
             { year: e.year, month: e.month, day: e.day },
             ms[curTab].idays
           ) * 44; // 更新新日期偏移量
-        ms[ci] = initMonth(e.year, e.month, e.day + 7, startWeek, false); // 计算下周的
+        ms[ci] = initMonth(
+          e.year,
+          e.month,
+          e.day + 7,
+          markers,
+          startWeek,
+          false
+        ); // 计算下周的
       } else {
-        ms[i] = initMonth(e.year, e.month, e.day + 7, startWeek, false); // 计算下下周的
+        ms[i] = initMonth(
+          e.year,
+          e.month,
+          e.day + 7,
+          markers,
+          startWeek,
+          false
+        ); // 计算下下周的
       }
     } else {
-      ms[i] = initMonth(e.year, e.month + 1, e.day, startWeek);
+      ms[i] = initMonth(e.year, e.month + 1, e.day, markers, startWeek);
       ms[ci].trans =
         getDayWeekIdxInMonth(
           { year: e.year, month: e.month, day: e.day },

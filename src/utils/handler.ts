@@ -1,5 +1,5 @@
 import dayjs from './dayjs';
-import { lunarHandle, astroHandle } from './services';
+import { lunarHandle, astroHandle, markerHandle } from './services';
 
 const Weeks = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -8,18 +8,24 @@ export function resortWeeks(start: number) {
   return [...Weeks.slice(start), ...Weeks.slice(0, start)];
 }
 
-// 初始化 makers
-export function initMarkers(makers: Maker[]) {
+const colorMap = {
+  corner: '#61b057',
+  holiday: '#42a5f5',
+};
+
+// 初始化 markers
+export function initMarkers(m: Marker[]) {
   const markers: MarkerCache = {};
 
-  for (const marker of makers) {
-    const { year, month, day, type, mark, color, bgColor } = marker;
+  for (const marker of m) {
+    const { year, month, day, type } = marker;
+    let { mark, color, bgColor } = marker;
 
     if (['holiday', 'corner', 'schedule'].includes(type)) {
       const key = `${year}_${month}_${day}`;
 
       const _marker: MarkerType = markers.hasOwnProperty(key)
-        ? { ...markers[key] }
+        ? markers[key]
         : {};
 
       _marker[type as keyof MarkerType] = _marker.hasOwnProperty(type)
@@ -27,10 +33,37 @@ export function initMarkers(makers: Maker[]) {
         : [];
 
       // 类型为 corner 的只取一个字符串
-      const _mark = type == 'corner' ? mark.substring(0, 2) : mark;
+      mark = type === 'corner' ? mark.substring(0, 2) : mark;
+
+      // 默认颜色
+      if (typeof color === 'undefined') {
+        switch (type) {
+          case 'corner':
+            color = '#61b057';
+            break;
+          case 'holiday':
+            color = '#42a5f5';
+            break;
+          case 'schedule':
+            color = '#fb8c00';
+        }
+      }
+
+      if (typeof bgColor === 'undefined') {
+        switch (type) {
+          case 'corner':
+            bgColor = 'transparent';
+            break;
+          case 'holiday':
+            bgColor = 'transparent';
+            break;
+          case 'schedule':
+            bgColor = '#ffcc80';
+        }
+      }
 
       _marker[type as keyof MarkerType]!.push({
-        mark: _mark,
+        mark,
         color,
         bgColor,
       });
@@ -48,7 +81,11 @@ export function isValidDate(date: Date) {
 }
 
 // 获取日期对象
-export function initDay(d?: string | number | Date, state = 'cur') {
+export function initDay(
+  d?: string | number | Date,
+  state = 'cur',
+  cache: MarkerCache = {}
+) {
   const date = dayjs(d).isValid() ? dayjs(d) : dayjs();
 
   let res: DateFullType = {
@@ -64,49 +101,67 @@ export function initDay(d?: string | number | Date, state = 'cur') {
 
   res = lunarHandle(res);
   res = astroHandle(res);
+  res = markerHandle(res, cache);
 
   return res;
 }
 
 // 生成某月日历
-export function month(year: number, month: number) {
+export function month(year: number, month: number, markers: MarkerCache) {
   return Array(dayjs([year, month - 1]).daysInMonth() /* 该月天数 */)
     .fill(null)
-    .map((_, idx /* 几号 */) => initDay(new Date(year, month - 1, idx + 1)));
+    .map((_, idx /* 几号 */) =>
+      initDay(new Date(year, month - 1, idx + 1), 'cur', markers)
+    );
 }
 
 // 上个月在这个月的部分
-export function monthBefore(date: DateFullType, weekStart = 0) {
+export function monthBefore(
+  date: DateFullType,
+  markers: MarkerCache,
+  weekStart = 0
+) {
   const { year, month, week } = date;
 
   const len = Math.abs(week + 7 - weekStart) % 7;
 
   return Array(len)
     .fill(null)
-    .map((_, idx) => initDay(new Date(year, month - 1, -idx), 'prev'))
+    .map((_, idx) => initDay(new Date(year, month - 1, -idx), 'prev', markers))
     .reverse();
 }
 
 // 下个月在这个月的部分
-export function monthAfter(date: DateFullType, weekStart = 0) {
+export function monthAfter(
+  date: DateFullType,
+  markers: MarkerCache,
+  weekStart = 0
+) {
   const { year, month, day, week } = date;
 
   const len = 6 - (Math.abs(week + 7 - weekStart) % 7);
 
   return Array(len)
     .fill(null)
-    .map((_, idx) => initDay(new Date(year, month - 1, day + idx + 1), 'next'));
+    .map((_, idx) =>
+      initDay(new Date(year, month - 1, day + idx + 1), 'next', markers)
+    );
 }
 
 // 将前中后拼接成一个月的大数组
-export function suppleMonth(y: number, m: number, startWeek = 0) {
-  const monthDays = month(y, m);
+export function suppleMonth(
+  y: number,
+  m: number,
+  markers: MarkerCache,
+  startWeek = 0
+) {
+  const monthDays = month(y, m, markers);
 
   return {
     count: monthDays.length,
-    days: monthBefore(monthDays[0], startWeek)
+    days: monthBefore(monthDays[0], markers, startWeek)
       .concat(monthDays)
-      .concat(monthAfter(monthDays[monthDays.length - 1], startWeek)),
+      .concat(monthAfter(monthDays[monthDays.length - 1], markers, startWeek)),
   };
 }
 
@@ -126,6 +181,7 @@ export function initMonth(
   y: number,
   m: number,
   d: number,
+  markers: MarkerCache,
   startWeek = 0,
   needFix = true // 是否需要将日期限制在本月
 ): MonthType {
@@ -134,7 +190,12 @@ export function initMonth(
   const date = dayjs([needFix ? y : d_.year(), needFix ? m : d_.month(), 1]); // 月初
 
   // 以 m 月为中心获取完整日历
-  const { days, count } = suppleMonth(date.year(), date.month(), startWeek);
+  const { days, count } = suppleMonth(
+    date.year(),
+    date.month(),
+    markers,
+    startWeek
+  );
 
   // 当前日期比该月天数大就取天数最大值(主要避免30号-->31号的问题)
   const xday = d <= count ? d : count;
@@ -174,6 +235,7 @@ export function getDayWeekIdxInMonth(date: DateType, days: DateFullType[]) {
 export function initMonths(
   date: DateType,
   curTab: number,
+  markers: MarkerCache,
   startWeek: number,
   num: number = 3
 ) {
@@ -182,6 +244,6 @@ export function initMonths(
   return new Array(num).fill(null).map((_, idx) => {
     const _month = month + idx - curTab;
 
-    return initMonth(year, _month, day, startWeek);
+    return initMonth(year, _month, day, markers, startWeek);
   });
 }

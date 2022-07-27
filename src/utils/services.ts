@@ -27,5 +27,7 @@ export function markerHandle(date: DateFullType, cache: MarkerCache) {
   const key = `${year}_${month}_${day}`;
   const marker = cache.hasOwnProperty(key) ? { ...cache[key] } : null;
 
-  return marker;
+  date['markers'] = marker;
+
+  return date;
 }
