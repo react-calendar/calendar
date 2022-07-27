@@ -32,7 +32,7 @@ $layerBackground2: #fcebeb;
     z-index: 2;
 
     &::before {
-      content: '年';
+      content: '月';
       position: absolute;
       top: $offset;
       left: $offset;
