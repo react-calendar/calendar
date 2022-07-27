@@ -30,14 +30,14 @@ interface MonthType {
   trans: number; // 平移距离
 }
 
-interface Maker {
+interface Marker {
   year: number;
   month: number;
   day: number;
   type: string; // holiday | corner | schedule
   mark: string;
-  color: string;
-  bgColor: string;
+  color?: string;
+  bgColor?: string;
 }
 
 interface m {
@@ -47,7 +47,7 @@ interface m {
 }
 
 interface MarkerType {
-  holidy?: m[];
+  holiday?: m[];
   corner?: m[];
   schedule?: m[];
 }
@@ -70,6 +70,6 @@ interface DateFullType extends DateType {
   state?: string;
   lunar?: Lunar; // 农历
   astro?: string; // 星座
-  marker?: MarkerType; // 日期事件标记
+  markers?: MarkerType; // 日期事件标记
   [key: string]: any;
 }
