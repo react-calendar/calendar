@@ -49,6 +49,47 @@ function CalendarDay(props: DayProps) {
     }
   }
 
+  let event = null;
+  if (date.markers?.schedule) {
+    event = (
+      <div
+        className="event"
+        style={{ background: date.markers.schedule[0].bgColor }}></div>
+    );
+  }
+
+  let corner = null;
+  if (date.markers?.corner) {
+    corner = (
+      <div
+        className="corner"
+        style={{
+          color: date.markers.corner[0].color,
+          background: date.markers.corner[0].bgColor,
+        }}>
+        {date.markers.corner[0].mark}
+      </div>
+    );
+  }
+
+  let desc = null;
+  if (showLunar) {
+    if (date.markers?.holiday) {
+      // 有节假日的显示节假日
+      desc = (
+        <div className="dayCn" style={{ color: date.markers.holiday[0].color }}>
+          {date.markers!.holiday[0].mark}
+        </div>
+      );
+    } else if (date.lunar!.isTerm) {
+      // 有二十四节气的显示二十四节气
+      desc = <div className="dayCn term">{date.lunar!.term}</div>;
+    } else {
+      // 什么都没有的显示农历
+      desc = <div className="dayCn">{date.lunar!.dayCn}</div>;
+    }
+  }
+
   return (
     <div
       className={`column items-center justify-center day__container
@@ -57,13 +98,14 @@ function CalendarDay(props: DayProps) {
       }`}
       onClick={() => click(date)}>
       {/* 日期 */}
-      <div>{date.day}</div>
+      <div className="day__content">
+        <div>{date.day}</div>
+        {corner}
+      </div>
       {/* 农历 */}
-      {showLunar && (
-        <div className={`dayCn ${date.lunar!.isTerm && 'term'}`}>
-          {date.lunar!.isTerm ? date.lunar!.term : date.lunar!.dayCn}
-        </div>
-      )}
+      {desc}
+      {/* 事件标记 */}
+      {event}
     </div>
   );
 }
