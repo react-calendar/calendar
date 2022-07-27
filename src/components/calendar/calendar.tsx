@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { initMarkers, resortWeeks, initDay } from 'src/utils/handler';
 
 import Checkbox from 'src/components/checkbox';
-import CalendayPanel from 'src/components/calendar/calendarPanel';
+import CalendayPanel from 'src/components/calendar/panel';
 
 import 'src/styles/index.scss';
 import 'src/styles/layout.scss';
@@ -34,16 +34,6 @@ function Calendar(props: CalendarProps) {
   function handleChange(e: boolean) {
     // true: 周视图, false: 月视图
     setFold(e);
-  }
-
-  function prev() {
-    // const prev = (curTab - 1 + tabNums) % tabNums;
-    // refreshPanel(prev);
-  }
-
-  function next() {
-    // const next = (curTab + 1) % tabNums;
-    // refreshPanel(next);
   }
 
   function onDateChange(e: DateFullType) {

@@ -21,7 +21,17 @@ function CalendarDay(props: DayProps) {
   // 点击日期事件
   function click(e: DateFullType) {
     if (fold) {
-      // 当前处于周视图
+      // 当前处于周视图, 不需要滑动
+      if (e.state === 'prev') {
+        // 点击的是上个月
+        prev(e);
+      } else if (e.state === 'next') {
+        // 点击的是下个月
+        next(e);
+      } else {
+        // 点击的是本月
+        onDateChange(e);
+      }
     } else {
       // 当前处于月视图
       if (e.state === 'prev') {
@@ -41,8 +51,10 @@ function CalendarDay(props: DayProps) {
 
   return (
     <div
-      className={`column items-center justify-center day__container 
-        ${date.state} ${date.today && 'today'} ${select && 'select'}`}
+      className={`column items-center justify-center day__container
+        ${fold && 'fold'} ${date.state} ${date.today && 'today'} ${
+        select && 'select'
+      }`}
       onClick={() => click(date)}>
       {/* 日期 */}
       <div>{date.day}</div>
