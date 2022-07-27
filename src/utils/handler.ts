@@ -175,7 +175,7 @@ export function initMonth(
 }
 
 // 日期所在月份第几周
-function getDayWeekIdxInMonth(date: DateType, days: DateFullType[]) {
+export function getDayWeekIdxInMonth(date: DateType, days: DateFullType[]) {
   const { month: m, day: d } = date;
 
   const idx = days.findIndex(({ month, day }) => m === month && d === day);
@@ -198,3 +198,19 @@ export function initMonths(
     return initMonth(year, _month, day, startWeek);
   });
 }
+
+// // 判断左滑还是右划, mod => swiper 数减一(swiper 从 0 开始)
+// export function swiperDirection(prev: number, cur: number, mod = 2) {
+//   if (prev < cur) {
+//     // 之前的小于现在的
+//     if (prev === 0 && cur === mod) return -1; // 左滑
+
+//     return 1; // 右滑
+//   } else if (prev > cur) {
+//     if (cur === 0 && prev === mod) return 1; // 右滑
+
+//     return -1;
+//   }
+
+//   return 0;
+// }
