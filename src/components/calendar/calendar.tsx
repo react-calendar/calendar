@@ -10,7 +10,7 @@ import 'src/styles/layout.scss';
 
 interface CalendarProps {
   fold: boolean; // 是否展开
-  markers: Maker[]; // 事件标记
+  markers: Marker[]; // 事件标记
   darkMode: boolean; // 是否开启暗黑模式
   initDate: number | string | Date; // 初始时间
   startWeek: number; // 一周起始, 0 | 1 | 2 | 3 | 4 | 5 | 6
@@ -20,13 +20,15 @@ interface CalendarProps {
 }
 
 function Calendar(props: CalendarProps) {
-  const { initDate, markers, startWeek, showLunar, width } = props;
+  const { initDate, markers: mk, startWeek, showLunar, width } = props;
 
-  const [makers, setMakers] = useState<MarkerCache>(initMarkers(markers));
+  const markers = initMarkers(mk); // 初始化标记缓存
 
   const weeks = resortWeeks(startWeek);
 
-  const [selectDate, setSelectDate] = useState(initDay(initDate));
+  const [selectDate, setSelectDate] = useState(
+    initDay(initDate, 'cur', markers)
+  );
 
   const [curTab, setCurTab] = useState(1);
 
@@ -82,6 +84,7 @@ function Calendar(props: CalendarProps) {
       {/* 日期面板 */}
       <div className="calendar__panel">
         <CalendayPanel
+          markers={markers}
           showLunar={true}
           curTab={curTab}
           date={selectDate}
