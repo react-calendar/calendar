@@ -1,11 +1,11 @@
-import PropTypes from 'prop-types';
-import { useState } from 'react';
-import { initMarkers, resortWeeks, initDay } from 'src/utils/handler';
+import { useCallback, useMemo, useState } from 'react';
+import { initMarkers, initDay } from 'src/utils/handler';
 
-import Checkbox from 'src/components/checkbox';
-import CalendayPanel from 'src/components/calendar/panel';
+import Header from 'components/calendar/header';
+import Panel from 'components/calendar/panel';
+import Week from 'components/calendar/week';
+import { GlobalContext } from 'components/store';
 
-import 'src/styles/index.scss';
 import 'src/styles/layout.scss';
 
 interface CalendarProps {
@@ -17,100 +17,79 @@ interface CalendarProps {
   showLunar: boolean; // 是否显示农历
   showMarker: boolean; // 是否显示标记
   width: number; // 日历宽度
+  onDateChange?: (date: DateFullType) => void; // 日期变更回调
+  onViewChange?: (view: string) => void; // 视图变更回调
 }
 
 function Calendar(props: CalendarProps) {
-  const { initDate, markers: mk, startWeek, showLunar, width } = props;
+  const {
+    initDate,
+    markers,
+    startWeek,
+    showLunar,
+    width,
+    onViewChange,
+    onDateChange,
+  } = props;
 
-  const markers = initMarkers(mk); // 初始化标记缓存
-
-  const weeks = resortWeeks(startWeek);
+  const markers_ = useMemo(() => initMarkers(markers), [markers]); // 日期标记缓存
 
   const [selectDate, setSelectDate] = useState(
-    initDay(initDate, 'cur', markers)
+    initDay(initDate, 'cur', markers_)
   );
 
   const [curTab, setCurTab] = useState(1);
 
+  // true: 周视图, false: 月视图
   const [fold, setFold] = useState(props.fold);
-  function handleChange(e: boolean) {
-    // true: 周视图, false: 月视图
+  const viewChange = useCallback((e: boolean) => {
     setFold(e);
-  }
 
-  function onDateChange(e: DateFullType) {
+    if (typeof onViewChange === 'function') {
+      onViewChange(fold ? 'week' : 'month');
+    }
+  }, []);
+
+  const dateChange = useCallback((e: DateFullType) => {
     setSelectDate(e); // 修改已选择的日期
 
-    if (fold) {
-      // 当前处于折叠状态
-    } else {
-      // 当前处于月视图
-      if (e.state === 'prev' || e.state === 'next') {
-        // 当前点击的是上个月或者下个月
-      } else {
-      }
+    if (typeof onDateChange === 'function') {
+      onDateChange(e);
     }
-  }
+  }, []);
 
-  function onCurIndexChange(e: number) {
+  const curTabChange = useCallback((e: number) => {
     setCurTab(e); // 修改当前 swiper 索引
-  }
+  }, []);
 
   return (
-    <div className="calendar__container" style={{ width: `${width}px` }}>
-      <div className="calendar__header row justify-between items-center">
-        {/* 日期 */}
-        <div className="calendar__content row">
-          <div className="calendar-content__datetime">{`${selectDate.month}月${selectDate.day}日`}</div>
-          <div className="column justify-center">
-            <div>{`${selectDate.year}年`}</div>
-            {/* 农历 */}
-            {showLunar && (
-              <div className="calendar-content__year_desc">
-                {`${selectDate.lunar!.gzYear}${selectDate.lunar!.zodiac}年`}
-              </div>
-            )}
-          </div>
-        </div>
-        {/* 月/周切换按钮 */}
-        <Checkbox checked={props.fold} onChange={handleChange}></Checkbox>
+    <GlobalContext.Provider
+      value={{
+        fold,
+        selectDate,
+        curTab,
+        showLunar,
+        startWeek,
+        viewChange,
+      }}>
+      <div
+        style={{
+          width: `${width}px`,
+          minWidth: '300px',
+          border: '1px solid #e2e8f0',
+          borderRadius: '4px',
+          padding: '4px',
+        }}>
+        <Header></Header>
+        <Week></Week>
+        <Panel
+          markers={markers_}
+          onCurTabChange={curTabChange}
+          onDateChange={dateChange}></Panel>
       </div>
-      {/* 星期 */}
-      <div className="calendar__weeks grid">
-        {weeks.map((item: string) => (
-          <div key={item}>{item}</div>
-        ))}
-      </div>
-      {/* 日期面板 */}
-      <div className="calendar__panel">
-        <CalendayPanel
-          markers={markers}
-          showLunar={true}
-          curTab={curTab}
-          date={selectDate}
-          onCurIndexChange={onCurIndexChange}
-          onDateChange={onDateChange}
-          startWeek={startWeek}
-          fold={fold}></CalendayPanel>
-      </div>
-    </div>
+    </GlobalContext.Provider>
   );
 }
-
-Calendar.propTypes = {
-  fold: PropTypes.bool,
-  markers: PropTypes.array,
-  darkMode: PropTypes.bool,
-  initDate: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-    PropTypes.instanceOf(Date),
-  ]),
-  startWeek: PropTypes.number,
-  showLunar: PropTypes.bool,
-  showMarker: PropTypes.bool,
-  width: PropTypes.number,
-};
 
 Calendar.defaultProps = {
   fold: false,
