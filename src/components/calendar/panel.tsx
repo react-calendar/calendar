@@ -1,72 +1,67 @@
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { initMonths, getDayWeekIdxInMonth, initMonth } from 'src/utils/handler';
 import CalendarDay from './day';
 
 import 'swiper/css';
 import 'src/styles/layout.scss';
 import 'src/styles/transition.scss';
+import { GlobalContext } from '../store';
 
 interface PanelProps {
-  fold: boolean;
-  date: DateFullType;
-  startWeek: number;
-  curTab: number;
   markers: MarkerCache;
-  showLunar: boolean;
   onDateChange: (value: DateFullType) => void;
-  onCurIndexChange: (value: number) => void;
+  onCurTabChange: (value: number) => void;
 }
 
-function CalendarPanel(props: PanelProps) {
-  const {
-    fold,
-    date,
-    curTab,
-    startWeek,
-    showLunar,
-    markers,
-    onDateChange: odc,
-    onCurIndexChange: ocic,
-  } = props;
+export default function Panel(props: PanelProps) {
+  const { markers, onDateChange: odc, onCurTabChange: octc } = props;
+
+  const { selectDate, curTab, startWeek, fold } = useContext(GlobalContext);
 
   const [months, setMonths] = useState<MonthType[]>(
-    initMonths(date, curTab, markers, startWeek)
+    initMonths(selectDate, curTab, markers, startWeek)
   );
 
-  // 刷新周视图, curTab 部分不需要变
-  function refreshWeekMonth() {
-    const { day, year, month } = date;
-    const ms = [...months];
+  // 刷新周视图
+  const refreshWeekMonth = useCallback(() => {
+    const { day, year, month } = selectDate;
+    const ms = new Array(months.length);
 
-    // 上周索引
+    // 本周
+    ms[curTab] = months[curTab];
+
+    // 上周
     const pi = (curTab + 2) % 3;
     ms[pi] = initMonth(year, month, day - 7, markers, startWeek, false);
 
-    // 下周索引
+    // 下周
     const ni = (curTab + 1) % 3;
     ms[ni] = initMonth(year, month, day + 7, markers, startWeek, false);
 
     setMonths(ms);
-  }
+  }, [selectDate]);
 
   // 刷新月视图
-  function refreshMonth() {
-    const { day, year, month } = date;
-    const ms = [...months];
+  const refreshMonth = useCallback(() => {
+    const { day, year, month } = selectDate;
+    const ms = new Array(months.length);
 
-    // 上月索引
+    // 当月
+    ms[curTab] = months[curTab];
+
+    // 上月
     const pi = (curTab + 2) % 3;
     ms[pi] = initMonth(year, month - 1, day, markers, startWeek);
 
-    // 下月索引
+    // 下月
     const ni = (curTab + 1) % 3;
     ms[ni] = initMonth(year, month + 1, day, markers, startWeek);
 
     setMonths(ms);
-  }
+  }, [selectDate]);
 
-  // 仅当 fold 变化时需要刷新视图
+  // fold 变化时需要刷新视图
   useEffect(() => {
     if (fold) {
       refreshWeekMonth();
@@ -173,7 +168,7 @@ function CalendarPanel(props: PanelProps) {
   function onSlide(e: any) {
     if (e.swipeDirection /* 仅手(非点击)滑动时需要 */) {
       let d_: DateFullType;
-      const { day, year, month } = date;
+      const { day, year, month } = selectDate;
       const m = months[e.realIndex];
 
       if (fold) {
@@ -205,7 +200,7 @@ function CalendarPanel(props: PanelProps) {
       }
     }
 
-    ocic(e.realIndex); // 通知父组件修改 curTab
+    octc(e.realIndex); // 通知父组件修改 curTab
   }
 
   // 点击改变本月日期时执行
@@ -246,16 +241,9 @@ function CalendarPanel(props: PanelProps) {
             style={{ transform: `translateY(-${fold ? item.trans : 0}px)` }}>
             {item.idays.map((i) => (
               <CalendarDay
-                fold={fold}
-                showLunar={showLunar}
                 onDateChange={onDateChange}
                 next={next}
                 prev={prev}
-                select={
-                  i.year === date.year &&
-                  i.month === date.month &&
-                  i.day === date.day
-                }
                 key={i.key}
                 date={i}></CalendarDay>
             ))}
@@ -265,5 +253,3 @@ function CalendarPanel(props: PanelProps) {
     </Swiper>
   );
 }
-
-export default CalendarPanel;
