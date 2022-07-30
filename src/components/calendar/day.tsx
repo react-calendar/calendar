@@ -1,4 +1,5 @@
 import { useSwiper } from 'swiper/react';
+import { useCallback, useMemo } from 'react';
 
 import 'src/styles/layout.scss';
 import 'src/styles/day.scss';
@@ -19,7 +20,7 @@ function CalendarDay(props: DayProps) {
   const swiper = useSwiper();
 
   // 点击日期事件
-  function click(e: DateFullType) {
+  const click = useCallback((e: DateFullType) => {
     if (fold) {
       // 当前处于周视图, 不需要滑动
       if (e.state === 'prev') {
@@ -47,48 +48,60 @@ function CalendarDay(props: DayProps) {
         onDateChange(e);
       }
     }
-  }
+  }, []);
 
-  let event = null;
-  if (date.markers?.schedule) {
-    event = (
-      <div
-        className="event"
-        style={{ background: date.markers.schedule[0].bgColor }}></div>
-    );
-  }
+  const event = useMemo(() => {
+    console.log('hello');
+    if (date.markers?.schedule) {
+      return (
+        <div
+          className="event"
+          style={{ background: date.markers.schedule[0].bgColor }}></div>
+      );
+    }
 
-  let corner = null;
-  if (date.markers?.corner) {
-    corner = (
-      <div
-        className="corner"
-        style={{
-          color: date.markers.corner[0].color,
-          background: date.markers.corner[0].bgColor,
-        }}>
-        {date.markers.corner[0].mark}
-      </div>
-    );
-  }
+    return null;
+  }, [date]);
 
-  let desc = null;
-  if (showLunar) {
-    if (date.markers?.holiday) {
-      // 有节假日的显示节假日
-      desc = (
-        <div className="dayCn" style={{ color: date.markers.holiday[0].color }}>
-          {date.markers!.holiday[0].mark}
+  const corner = useMemo(() => {
+    if (date.markers?.corner) {
+      return (
+        <div
+          className="corner"
+          style={{
+            color: date.markers.corner[0].color,
+            background: date.markers.corner[0].bgColor,
+          }}>
+          {date.markers.corner[0].mark}
         </div>
       );
-    } else if (date.lunar!.isTerm) {
-      // 有二十四节气的显示二十四节气
-      desc = <div className="dayCn term">{date.lunar!.term}</div>;
-    } else {
-      // 什么都没有的显示农历
-      desc = <div className="dayCn">{date.lunar!.dayCn}</div>;
     }
-  }
+
+    return null;
+  }, [date]);
+
+  const desc = useMemo(() => {
+    if (showLunar) {
+      if (date.markers?.holiday) {
+        // 有节假日的显示节假日
+        return (
+          <div
+            className="dayCn"
+            style={{ color: date.markers.holiday[0].color }}>
+            {date.markers!.holiday[0].mark}
+          </div>
+        );
+      } else if (date.lunar!.isTerm) {
+        // 有二十四节气的显示二十四节气
+        return <div className="dayCn term">{date.lunar!.term}</div>;
+      } else {
+        // 什么都没有的显示农历
+        return <div className="dayCn">{date.lunar!.dayCn}</div>;
+      }
+    }
+
+    return null;
+  }, [showLunar, date]);
 
   return (
     <div
