@@ -14,7 +14,7 @@ interface DayProps {
   next: (value: DateFullType) => void; // 点击下月日期回调
 }
 
-function CalendarDay(props: DayProps) {
+export default function CalendarDay(props: DayProps) {
   const { date, showLunar, select, fold, onDateChange, prev, next } = props;
 
   const swiper = useSwiper();
@@ -51,7 +51,6 @@ function CalendarDay(props: DayProps) {
   }, []);
 
   const event = useMemo(() => {
-    console.log('hello');
     if (date.markers?.schedule) {
       return (
         <div
@@ -122,5 +121,3 @@ function CalendarDay(props: DayProps) {
     </div>
   );
 }
-
-export default CalendarDay;
