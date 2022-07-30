@@ -67,7 +67,7 @@ interface DateFullType extends DateType {
   weekCn: string; // 星期中文
   today?: boolean; // 是否是今天
   key?: string;
-  state?: string;
+  state: string;
   lunar?: Lunar; // 农历
   astro?: string; // 星座
   markers?: MarkerType; // 日期事件标记
