@@ -9,10 +9,6 @@ $background2: #f44336;
 $layerBackground1: #ebf7fc;
 $layerBackground2: #fcebeb;
 
-.relative-position {
-  position: relative;
-}
-
 .checkbox__container {
   display: inline-block;
   margin-right: 5px;
@@ -57,6 +53,11 @@ $layerBackground2: #fcebeb;
   &,
   & .layer {
     border-radius: math.div($height, 2);
+  }
+
+  &,
+  .checkbox {
+    position: relative;
   }
 
   .checkbox {
