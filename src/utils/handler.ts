@@ -14,66 +14,70 @@ const colorMap = {
 };
 
 // 初始化 markers
-export function initMarkers(m: Marker[]) {
+function __() {
   const markers: MarkerCache = {};
 
-  for (const marker of m) {
-    const { year, month, day, type } = marker;
-    let { mark, color, bgColor } = marker;
+  return function (m: Marker[]) {
+    for (const marker of m) {
+      const { year, month, day, type } = marker;
+      let { mark, color, bgColor } = marker;
 
-    if (['holiday', 'corner', 'schedule'].includes(type)) {
-      const key = `${year}_${month}_${day}`;
+      if (['holiday', 'corner', 'schedule'].includes(type)) {
+        const key = `${year}_${month}_${day}`;
 
-      const _marker: MarkerType = markers.hasOwnProperty(key)
-        ? markers[key]
-        : {};
+        const _marker: MarkerType = markers.hasOwnProperty(key)
+          ? markers[key]
+          : {};
 
-      _marker[type as keyof MarkerType] = _marker.hasOwnProperty(type)
-        ? _marker[type as keyof MarkerType]
-        : [];
+        _marker[type as keyof MarkerType] = _marker.hasOwnProperty(type)
+          ? _marker[type as keyof MarkerType]
+          : [];
 
-      // 类型为 corner 的只取一个字符串
-      mark = type === 'corner' ? mark.substring(0, 2) : mark;
+        // 类型为 corner 的只取一个字符串
+        mark = type === 'corner' ? mark.substring(0, 2) : mark;
 
-      // 默认颜色
-      if (typeof color === 'undefined') {
-        switch (type) {
-          case 'corner':
-            color = '#61b057';
-            break;
-          case 'holiday':
-            color = '#42a5f5';
-            break;
-          case 'schedule':
-            color = '#fb8c00';
+        // 默认颜色
+        if (typeof color === 'undefined') {
+          switch (type) {
+            case 'corner':
+              color = '#61b057';
+              break;
+            case 'holiday':
+              color = '#42a5f5';
+              break;
+            case 'schedule':
+              color = '#fb8c00';
+          }
         }
-      }
 
-      if (typeof bgColor === 'undefined') {
-        switch (type) {
-          case 'corner':
-            bgColor = 'transparent';
-            break;
-          case 'holiday':
-            bgColor = 'transparent';
-            break;
-          case 'schedule':
-            bgColor = '#ffcc80';
+        if (typeof bgColor === 'undefined') {
+          switch (type) {
+            case 'corner':
+              bgColor = 'transparent';
+              break;
+            case 'holiday':
+              bgColor = 'transparent';
+              break;
+            case 'schedule':
+              bgColor = '#ffcc80';
+          }
         }
+
+        _marker[type as keyof MarkerType]!.push({
+          mark,
+          color,
+          bgColor,
+        });
+
+        markers[key] = _marker;
       }
-
-      _marker[type as keyof MarkerType]!.push({
-        mark,
-        color,
-        bgColor,
-      });
-
-      markers[key] = _marker;
     }
-  }
 
-  return markers;
+    return markers;
+  };
 }
+
+export const initMarkers = __();
 
 // 判断是否是合法时间对象
 export function isValidDate(date: Date) {
