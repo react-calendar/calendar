@@ -48,7 +48,7 @@ export default function Day(props: DayProps) {
         onDateChange(e);
       }
     }
-  }, []);
+  }, [swiper]);
 
   // 是否选中当前日期
   const select = useMemo(() => {

@@ -10,12 +10,13 @@ import { GlobalContext } from '../store';
 
 interface PanelProps {
   markers: MarkerCache;
+  refresh: boolean;
   onDateChange: (value: DateFullType) => void;
   onCurTabChange: (value: number) => void;
 }
 
 export default function Panel(props: PanelProps) {
-  const { markers, onDateChange: odc, onCurTabChange: octc } = props;
+  const { markers, refresh, onDateChange: odc, onCurTabChange: octc } = props;
 
   const { selectDate, curTab, startWeek, fold } = useContext(GlobalContext);
 
@@ -23,8 +24,14 @@ export default function Panel(props: PanelProps) {
     initMonths(selectDate, curTab, markers, startWeek)
   );
 
+  useEffect(() => {
+    if (refresh) {
+      setMonths(initMonths(selectDate, curTab, markers, startWeek));
+    }
+  }, [refresh]);
+
   // 刷新周视图
-  const refreshWeekMonth = useCallback(() => {
+  const refreshWeekMonth = () => {
     const { day, year, month } = selectDate;
     const ms = new Array(months.length);
 
@@ -40,10 +47,10 @@ export default function Panel(props: PanelProps) {
     ms[ni] = initMonth(year, month, day + 7, markers, startWeek, false);
 
     setMonths(ms);
-  }, [selectDate]);
+  };
 
   // 刷新月视图
-  const refreshMonth = useCallback(() => {
+  const refreshMonth = () => {
     const { day, year, month } = selectDate;
     const ms = new Array(months.length);
 
@@ -59,7 +66,7 @@ export default function Panel(props: PanelProps) {
     ms[ni] = initMonth(year, month + 1, day, markers, startWeek);
 
     setMonths(ms);
-  }, [selectDate]);
+  };
 
   // fold 变化时需要刷新视图
   useEffect(() => {
@@ -173,7 +180,7 @@ export default function Panel(props: PanelProps) {
 
       if (fold) {
         const dir = e.swipeDirection === 'prev' ? -1 : 1;
-        const d = new Date(year, month, day + dir * 7);
+        const d = new Date(year, month - 1, day + dir * 7);
 
         const idx = m.idays.findIndex((el) => {
           return el.state === 'cur' && el.day === d.getDate();

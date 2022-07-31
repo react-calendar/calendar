@@ -32,6 +32,8 @@ function Calendar(props: CalendarProps) {
     onDateChange,
   } = props;
 
+  const [refresh, setRefresh] = useState(false);
+
   const markers_ = useMemo(() => initMarkers(markers), [markers]); // 日期标记缓存
 
   const [selectDate, setSelectDate] = useState(
@@ -42,13 +44,16 @@ function Calendar(props: CalendarProps) {
 
   // true: 周视图, false: 月视图
   const [fold, setFold] = useState(props.fold);
-  const viewChange = useCallback((e: boolean) => {
-    setFold(e);
+  const viewChange = useCallback(
+    (e: boolean) => {
+      setFold(e);
 
-    if (typeof onViewChange === 'function') {
-      onViewChange(fold ? 'week' : 'month');
-    }
-  }, []);
+      if (typeof onViewChange === 'function') {
+        onViewChange(fold ? 'week' : 'month');
+      }
+    },
+    [fold]
+  );
 
   const dateChange = useCallback((e: DateFullType) => {
     setSelectDate(e); // 修改已选择的日期
@@ -62,6 +67,15 @@ function Calendar(props: CalendarProps) {
     setCurTab(e); // 修改当前 swiper 索引
   }, []);
 
+  const onSelect = useCallback(
+    (e: DateType) => {
+      const { year, month, day } = e;
+      dateChange(initDay(new Date(year, month - 1, day), 'cur', markers_));
+      setRefresh(true);
+    },
+    [markers_]
+  );
+
   return (
     <GlobalContext.Provider
       value={{
@@ -71,6 +85,7 @@ function Calendar(props: CalendarProps) {
         showLunar,
         startWeek,
         viewChange,
+        onSelect,
       }}>
       <div
         style={{
@@ -83,6 +98,7 @@ function Calendar(props: CalendarProps) {
         <Header></Header>
         <Week></Week>
         <Panel
+          refresh={refresh}
           markers={markers_}
           onCurTabChange={curTabChange}
           onDateChange={dateChange}></Panel>

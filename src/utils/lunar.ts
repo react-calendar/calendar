@@ -393,10 +393,10 @@ function getZodiac(y: number, m: number, d: number) {
 // 判断日期是否越界
 function isValidDate(y: number, m: number, d: number) {
   return dayjs([y, m, d]).isBetween(
-    dayjs([1901, 0, 31]),
+    dayjs([1900, 0, 1]),
     dayjs([2100, 11, 31]),
     'day',
-    '()'
+    '[]'
   );
 }
 

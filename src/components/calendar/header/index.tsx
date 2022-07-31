@@ -1,6 +1,7 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { GlobalContext } from 'src/components/store';
 import Checkbox from 'src/components/checkbox';
+import Picker from 'components/picker';
 
 import style from './index.module.scss';
 import 'src/styles/layout.scss';
@@ -21,9 +22,16 @@ export default function Header() {
     return null;
   }, [showLunar, selectDate]);
 
+  const [displayPicker, setDisplayPicker] = useState(false);
+
   return (
     <div className="row justify-between items-center">
-      <div className={`${style.calendar__content} row`}>
+      <div
+        className={`${style.calendar__content} row `}
+        style={{ cursor: 'pointer' }}
+        onClick={() => {
+          setDisplayPicker(!displayPicker);
+        }}>
         <div
           className={
             style.datetime
@@ -33,6 +41,11 @@ export default function Header() {
           {lunar}
         </div>
       </div>
+      <Picker
+        display={displayPicker}
+        onClose={() => {
+          setDisplayPicker(false);
+        }}></Picker>
       <Checkbox checked={fold} onChange={viewChange}></Checkbox>
     </div>
   );

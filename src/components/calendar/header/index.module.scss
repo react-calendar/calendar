@@ -1,5 +1,6 @@
 .calendar__content {
   padding: 4px;
+  user-select: none;
 
   .datetime {
     font-size: 2em;

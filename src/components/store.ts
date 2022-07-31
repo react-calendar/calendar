@@ -8,4 +8,5 @@ export const GlobalContext = createContext({
   curTab: 1,
   startWeek: 0,
   viewChange: (v: boolean) => {},
+  onSelect: (e: DateType) => {},
 });
