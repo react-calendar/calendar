@@ -19,10 +19,11 @@
     "rootDir": "src",
     "outDir": "dist",
     "paths": {
-      "src/*": ["src/*"],
-      "utils/*": ["src/utils/*"],
-      "components/*": ["src/components/*"]
-    },
+      "@src/*": ["src/*"],
+      "@utils/*": ["src/utils/*"],
+      "@styles/*": ["src/styles/*"],
+      "@components/*": ["src/components/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "typings/**/*.d.ts"],
   "exclude": ["node_modules"],
