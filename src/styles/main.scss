@@ -1,0 +1,47 @@
+@import 'transitions.scss';
+@import 'theme.scss';
+
+.container {
+  position: relative;
+  display: inline-flex;
+  width: max-content;
+  height: max-content;
+  color: $color;
+  background-color: $bg;
+
+  &,
+  & * {
+    box-sizing: border-box;
+    &:focus {
+      outline: none;
+    }
+  }
+
+  & button,
+  & [role='button'] {
+    cursor: pointer;
+  }
+
+  &.bordered {
+    border: 1px solid;
+    border-color: $border;
+    border-radius: $rounded-lg;
+  }
+
+  &.expanded {
+    min-width: 100%;
+  }
+
+  & .container {
+    border: none;
+  }
+}
+
+.date-picker-content {
+  padding: 0;
+  background-color: $bg;
+
+  .container {
+    border: 0;
+  }
+}

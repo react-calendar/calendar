@@ -1,3 +1,8 @@
+/// <reference path="./theme.d.ts" />
+/// <reference path="./attribute.d.ts" />
+/// <reference path="./glyph.d.ts" />
+/// <reference path="./popovers.d.ts" />
+
 interface Lunar {
   lYear: number; // 农历年
   lMonth: number; // 农历月
@@ -72,4 +77,23 @@ interface DateFullType extends DateType {
   astro?: string; // 星座
   markers?: MarkerType; // 日期事件标记
   [key: string]: any;
+}
+
+interface ElementPosition {
+  top: number;
+  left: number;
+}
+
+interface CustomElement {
+  addEventListener: (
+    type: string,
+    listener: (e: any) => void,
+    options?: boolean | EventListenerOptions
+  ) => void;
+  removeEventListener: (
+    type: string,
+    listener: (e: any) => void,
+    options?: boolean | EventListenerOptions
+  ) => void;
+  dispatchEvent: (event: Event) => boolean;
 }

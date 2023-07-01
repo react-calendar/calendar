@@ -1,5 +1,5 @@
-import dayjs from './dayjs';
-import { lunarHandle, astroHandle, markerHandle } from './services';
+import dayjs from './dayjs/dayjs';
+import { lunarHandle, astroHandle, markerHandle } from './lunar/services';
 
 const Weeks = ['日', '一', '二', '三', '四', '五', '六'];
 
@@ -25,9 +25,7 @@ function __() {
       if (['holiday', 'corner', 'schedule'].includes(type)) {
         const key = `${year}_${month}_${day}`;
 
-        const _marker: MarkerType = markers.hasOwnProperty(key)
-          ? markers[key]
-          : {};
+        const _marker: MarkerType = markers.hasOwnProperty(key) ? markers[key] : {};
 
         _marker[type as keyof MarkerType] = _marker.hasOwnProperty(type)
           ? _marker[type as keyof MarkerType]
@@ -85,11 +83,7 @@ export function isValidDate(date: Date) {
 }
 
 // 获取日期对象
-export function initDay(
-  d?: string | number | Date,
-  state = 'cur',
-  cache: MarkerCache = {}
-) {
+export function initDay(d?: string | number | Date, state = 'cur', cache: MarkerCache = {}) {
   const date = dayjs(d).isValid() ? dayjs(d) : dayjs();
 
   let res: DateFullType = {
@@ -114,17 +108,11 @@ export function initDay(
 export function month(year: number, month: number, markers: MarkerCache) {
   return Array(dayjs([year, month - 1]).daysInMonth() /* 该月天数 */)
     .fill(null)
-    .map((_, idx /* 几号 */) =>
-      initDay(new Date(year, month - 1, idx + 1), 'cur', markers)
-    );
+    .map((_, idx /* 几号 */) => initDay(new Date(year, month - 1, idx + 1), 'cur', markers));
 }
 
 // 上个月在这个月的部分
-export function monthBefore(
-  date: DateFullType,
-  markers: MarkerCache,
-  weekStart = 0
-) {
+export function monthBefore(date: DateFullType, markers: MarkerCache, weekStart = 0) {
   const { year, month, week } = date;
 
   const len = Math.abs(week + 7 - weekStart) % 7;
@@ -136,29 +124,18 @@ export function monthBefore(
 }
 
 // 下个月在这个月的部分
-export function monthAfter(
-  date: DateFullType,
-  markers: MarkerCache,
-  weekStart = 0
-) {
+export function monthAfter(date: DateFullType, markers: MarkerCache, weekStart = 0) {
   const { year, month, day, week } = date;
 
   const len = 6 - (Math.abs(week + 7 - weekStart) % 7);
 
   return Array(len)
     .fill(null)
-    .map((_, idx) =>
-      initDay(new Date(year, month - 1, day + idx + 1), 'next', markers)
-    );
+    .map((_, idx) => initDay(new Date(year, month - 1, day + idx + 1), 'next', markers));
 }
 
 // 将前中后拼接成一个月的大数组
-export function suppleMonth(
-  y: number,
-  m: number,
-  markers: MarkerCache,
-  startWeek = 0
-) {
+export function suppleMonth(y: number, m: number, markers: MarkerCache, startWeek = 0) {
   const monthDays = month(y, m, markers);
 
   return {
@@ -194,12 +171,7 @@ export function initMonth(
   const date = dayjs([needFix ? y : d_.year(), needFix ? m : d_.month(), 1]); // 月初
 
   // 以 m 月为中心获取完整日历
-  const { days, count } = suppleMonth(
-    date.year(),
-    date.month(),
-    markers,
-    startWeek
-  );
+  const { days, count } = suppleMonth(date.year(), date.month(), markers, startWeek);
 
   // 当前日期比该月天数大就取天数最大值(主要避免30号-->31号的问题)
   const xday = d <= count ? d : count;
