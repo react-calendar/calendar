@@ -1,0 +1,54 @@
+.base-select {
+  position: relative;
+
+  & select {
+    color: $select-color;
+    display: block;
+    appearance: none;
+    background-color: transparent;
+    font-size: $text-base;
+    font-weight: $font-medium;
+    border-radius: $rounded;
+    height: 30px;
+    width: max-content;
+    padding: 0px 4px;
+    margin: 0;
+    line-height: $leading-none;
+    text-indent: 0px;
+    background-image: none;
+    cursor: pointer;
+    text-align: center;
+
+    &:hover {
+      background-color: $select-hover-bg;
+    }
+
+    &.has-icon {
+      padding: 0px 24px 0 10px;
+    }
+
+    &.small {
+      font-size: $text-sm;
+
+      &.has-icon {
+        padding: 0 20px 0 8px;
+      }
+    }
+
+    &.align-left {
+      text-align: left;
+    }
+
+    &.align-right {
+      text-align: right;
+    }
+  }
+
+  & .base-icon {
+    position: absolute;
+    top: 6px;
+    right: 4px;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
