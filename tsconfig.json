@@ -22,7 +22,8 @@
       "@src/*": ["src/*"],
       "@utils/*": ["src/utils/*"],
       "@styles/*": ["src/styles/*"],
-      "@components/*": ["src/components/*"]
+      "@components/*": ["src/components/*"],
+      "@use/*": ["src/use/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "typings/**/*.d.ts"],
