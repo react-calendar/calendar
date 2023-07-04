@@ -9,10 +9,10 @@ interface Props {
     label: string;
   }[];
   value: string;
-  alignRight: boolean;
-  alignLeft: boolean;
-  showIcon: boolean;
-  small: boolean;
+  alignRight?: boolean;
+  alignLeft?: boolean;
+  showIcon?: boolean;
+  small?: boolean;
   onChange: (value: string) => void;
 }
 
