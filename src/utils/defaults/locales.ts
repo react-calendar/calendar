@@ -3,7 +3,7 @@ interface LocaleConfig {
   L: string;
 }
 
-interface LocaleSetting {
+export interface LocaleSetting {
   id: string;
   firstDayOfWeek: number;
   masks: {
@@ -115,6 +115,7 @@ const localeSettings = Object.entries(locales).reduce((res, [id, { dow, L }]) =>
     firstDayOfWeek: dow,
     masks: { L },
   };
+
   return res;
 }, {} as Record<string, LocaleSetting>);
 
