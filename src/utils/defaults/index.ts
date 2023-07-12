@@ -1,9 +1,10 @@
-import { App, reactive, computed } from 'vue';
-import type { DarkModeConfig } from 'vue-screen-utils';
-import { defaultsDeep, mapValues, get, has } from '../../helpers';
+import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
+import type { DarkModeConfig } from '@utils/darkMode';
+import { defaultsDeep, mapValues, get, has } from '@utils/helpers';
+import locales, { type LocaleSetting } from '@utils/defaults/locales';
+
 import touch from './touch.json';
 import masks from './masks.json';
-import locales from './locales';
 
 declare const window: any;
 
@@ -20,7 +21,6 @@ interface DatePickerDefaults {
 }
 
 export interface Defaults {
-  componentPrefix?: string;
   color?: string;
   isDark?: DarkModeConfig;
   navVisibility?: string;
@@ -28,50 +28,61 @@ export interface Defaults {
   transition?: string;
   touch?: object;
   masks?: object;
-  locales?: any;
+  locales?: Record<string, LocaleSetting>;
   datePicker?: DatePickerDefaults;
 }
 
-const defaultConfig: Defaults = {
-  componentPrefix: 'V',
-  color: 'blue',
-  isDark: false,
-  navVisibility: 'click',
-  titlePosition: 'center',
-  transition: 'slide-h',
-  touch,
-  masks,
-  locales,
-  datePicker: {
-    updateOnInput: true,
-    inputDebounce: 1000,
-    popover: {
-      visibility: 'hover-focus',
-      placement: 'bottom-start',
-      isInteractive: true,
+const defaultConfig = atom<Defaults>({
+  key: 'defaultConfig',
+  default: {
+    color: 'blue',
+    isDark: false,
+    navVisibility: 'click',
+    titlePosition: 'center',
+    transition: 'slide-h',
+    touch,
+    masks,
+    locales,
+    datePicker: {
+      updateOnInput: true,
+      inputDebounce: 1000,
+      popover: {
+        visibility: 'hover-focus',
+        placement: 'bottom-start',
+        isInteractive: true,
+      },
     },
   },
-};
-
-const state = reactive(defaultConfig);
-
-const defaultLocales = computed(() => {
-  return mapValues(state.locales, (l: any) => {
-    l.masks = defaultsDeep(l.masks, state.masks);
-    return l;
-  });
 });
 
-export { defaultLocales };
+export const defaultLocales = selector({
+  key: 'defaultLocales',
+  get: ({ get }) => {
+    const state = get(defaultConfig);
+
+    return mapValues(state.locales, (l) => {
+      l.masks = defaultsDeep(l.masks, state.masks);
+      return l;
+    });
+  },
+});
 
 export const getDefault = (path: string) => {
-  if (window && has(window.__vcalendar__, path)) {
-    return get(window.__vcalendar__, path);
+  if (window && has(window.__calendar__, path)) {
+    return get(window.__calendar__, path);
   }
+
+  const state = useRecoilValue(defaultConfig);
+
   return get(state, path);
 };
 
-export const setupDefaults = (app: App, userDefaults: Defaults | undefined) => {
-  app.config.globalProperties.$VCalendar = state;
-  return Object.assign(state, defaultsDeep(userDefaults, state));
+export const setupDefaults = (userDefaults?: Defaults) => {
+  const [state, setState] = useRecoilState(defaultConfig);
+
+  const res: Defaults = { ...state, ...defaultsDeep(userDefaults, state) };
+
+  setState(res);
+
+  return res;
 };
