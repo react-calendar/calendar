@@ -3,13 +3,15 @@ interface LocaleConfig {
   L: string;
 }
 
-export interface LocaleSetting {
+interface LocaleSetting {
   id: string;
   firstDayOfWeek: number;
   masks: {
     L: string;
   };
 }
+
+export type Locales = Record<string, LocaleSetting>;
 
 const locales: Record<string, LocaleConfig> = {
   // Arabic

@@ -1,7 +1,7 @@
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil';
 import type { DarkModeConfig } from '@utils/darkMode';
 import { defaultsDeep, mapValues, get, has } from '@utils/helpers';
-import locales, { type LocaleSetting } from '@utils/defaults/locales';
+import locales, { type Locales } from '@utils/defaults/locales';
 
 import touch from './touch.json';
 import masks from './masks.json';
@@ -28,7 +28,7 @@ export interface Defaults {
   transition?: string;
   touch?: object;
   masks?: object;
-  locales?: Record<string, LocaleSetting>;
+  locales?: Locales;
   datePicker?: DatePickerDefaults;
 }
 
