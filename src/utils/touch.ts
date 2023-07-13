@@ -12,14 +12,14 @@ export const addHorizontalSwipeHandler = (
   options: SwipeHandlerOptions
 ) => {
   if (!element || !element.addEventListener || !isFunction(handler)) {
-    return null;
+    return;
   }
 
   const { maxSwipeTime, minHorizontalSwipeDistance, maxVerticalSwipeDistance } = options;
 
   let startX = 0;
   let startY = 0;
-  let startTime: number | null = null;
+  let startTime: number = 0;
   let isSwiping = false;
 
   function touchStart(e: TouchEvent) {
@@ -32,7 +32,9 @@ export const addHorizontalSwipeHandler = (
 
   function touchEnd(e: TouchEvent) {
     if (!isSwiping || !startTime) return;
+    
     isSwiping = false;
+    
     const t = e.changedTouches[0];
     const deltaX = t.screenX - startX;
     const deltaY = t.screenY - startY;
